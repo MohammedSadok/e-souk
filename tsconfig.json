@@ -1,10 +1,15 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
+    "typeRoots": ["node_modules/@types", "/types/images.d.ts"],
     "strict": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@components/*": ["components/*"],
+      "@api/*": ["api/*"],
+      "@store/*": ["store/*"]
     }
-  }
+  },
+
+  "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"]
 }
