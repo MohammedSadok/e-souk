@@ -2,7 +2,9 @@ import { Redirect, Tabs } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { Image, ImageSourcePropType, Text, View } from "react-native";
 
+import { RootState } from "@store/index";
 import Colors from "constants/Colors";
+import { useSelector } from "react-redux";
 import { icons } from "../../constants";
 interface TabIconProps {
   icon: ImageSourcePropType;
@@ -31,7 +33,8 @@ const TabIcon = ({ color, focused, icon, name }: TabIconProps) => {
 };
 
 export default function TabLayout() {
-  if (true) return <Redirect href="/sign-up" />;
+  const { user } = useSelector((state: RootState) => state.userAuth);
+  if (user === null) return <Redirect href="/sign-in" />;
   return (
     <>
       <Tabs

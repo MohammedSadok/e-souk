@@ -39,26 +39,12 @@ export interface Color {
   value: string;
 }
 
-import { FieldError, UseFormRegister } from "react-hook-form";
-
-export type FormData = {
+export interface User {
   email: string;
-  // userName: string;
+  userName: string;
+  isLoggedIn: boolean;
+}
+export interface UserLogin {
+  email: string;
   password: string;
-  // confirmPassword: string;
-};
-
-export type FormFieldProps = {
-  type: string;
-  placeholder: string;
-  name: ValidFieldNames;
-  register: UseFormRegister<FormData>;
-  error: FieldError | undefined;
-  valueAsNumber?: boolean;
-};
-
-export type ValidFieldNames =
-  | "email"
-  // | "userName"
-  | "password";
-// | "confirmPassword";
+}

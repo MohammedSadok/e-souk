@@ -1,5 +1,7 @@
 import Input from "@components/Input";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { login } from "@store/authSlice";
+import { useAppDispatch } from "@store/index";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { Text, TouchableOpacity, View } from "react-native";
@@ -10,6 +12,7 @@ const schema = z.object({
 });
 
 const LoginPage = () => {
+  const dispatch = useAppDispatch();
   const { control, handleSubmit } = useForm({
     defaultValues: {
       email: "",
@@ -19,7 +22,8 @@ const LoginPage = () => {
   });
 
   const onSubmit = async (data: z.infer<typeof schema>) => {
-    console.log("SUCCESS", data);
+    const resultAction = dispatch(login(data));
+    console.log("=>  onSubmit  resultAction:", resultAction);
   };
 
   return (

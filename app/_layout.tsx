@@ -1,7 +1,9 @@
+import store from "@store/index";
 import { useFonts } from "expo-font";
 import { SplashScreen, Stack } from "expo-router";
 import { useEffect } from "react";
 import "react-native-url-polyfill/auto";
+import { Provider } from "react-redux";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -35,10 +37,12 @@ const RootLayout = () => {
     return null;
   }
   return (
-    <Stack>
-      {/* <Stack.Screen name="(tabs)" options={{ headerShown: false }} /> */}
-      <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-    </Stack>
+    <Provider store={store}>
+      <Stack>
+        {/* <Stack.Screen name="(tabs)" options={{ headerShown: false }} /> */}
+        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+      </Stack>
+    </Provider>
   );
 };
 
