@@ -1,28 +1,20 @@
-import getProducts from "@api/get-products";
-import { useEffect, useState } from "react";
-import { ScrollView } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { Product } from "types";
+import { RootState } from "@store/index";
+import { ScrollView, View } from "react-native";
+import { useSelector } from "react-redux";
 import ProductItem from "../../components/ProductItem";
 const Page = () => {
-  const [products, setProducts] = useState<Product[]>();
-  useEffect(() => {
-    const fetchedProducts = async () => {
-      const products = await getProducts({ isFeatured: true });
-      setProducts(products);
-    };
-    fetchedProducts();
-  }, []);
+  const { products } = useSelector((state: RootState) => state.products);
+
   return (
-    <SafeAreaView className="flex-1 bg-gray-50">
-      {products && (
-        <ScrollView className="mt-5 space-y-2">
+    <View className="flex-1 bg-gray-50">
+      {products.length > 0 && (
+        <ScrollView className="space-y-2 ">
           {products.map((product) => (
             <ProductItem key={product.id} data={product} />
           ))}
         </ScrollView>
       )}
-    </SafeAreaView>
+    </View>
   );
 };
 export default Page;

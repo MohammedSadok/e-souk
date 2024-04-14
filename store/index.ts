@@ -4,10 +4,12 @@ const rootReducer = combineReducers({});
 import { configureStore } from "@reduxjs/toolkit";
 import { useDispatch, useSelector, useStore } from "react-redux";
 import authSlice from "./authSlice";
+import productSlice from "./productSlice";
 // ...
 const store = configureStore({
   reducer: {
     userAuth: authSlice,
+    products: productSlice,
   },
 });
 export default store;

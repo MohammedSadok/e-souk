@@ -23,7 +23,6 @@ const LoginPage = () => {
 
   const onSubmit = async (data: z.infer<typeof schema>) => {
     const resultAction = dispatch(login(data));
-    console.log("=>  onSubmit  resultAction:", resultAction);
   };
 
   return (

@@ -1,14 +1,9 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { User, UserLogin } from "types";
-interface MyKnownError {
-  errorMessage: string;
-  // ...
-}
 
 export const login = createAsyncThunk(
   "auth/login",
-  // if you type your function argument here
   async (user: UserLogin, thunkAPI) => {
     const { rejectWithValue } = thunkAPI;
     try {

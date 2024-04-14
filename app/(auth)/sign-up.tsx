@@ -20,9 +20,7 @@ const SignUp = () => {
     resolver: zodResolver(schema),
   });
 
-  const onSubmit = async (data: z.infer<typeof schema>) => {
-    console.log("SUCCESS", data);
-  };
+  const onSubmit = async (data: z.infer<typeof schema>) => {};
 
   return (
     <View className="items-center justify-center flex-1 px-4">

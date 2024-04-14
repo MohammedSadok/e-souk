@@ -1,7 +1,7 @@
-import getProduct from "@api/get-product";
-import getProducts from "@api/get-products";
 import RelatedItem from "@components/RelatedItem";
 import { Feather } from "@expo/vector-icons";
+import { RootState, useAppDispatch } from "@store/index";
+import { addProductToCart } from "@store/productSlice";
 import { useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
@@ -12,25 +12,32 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useSelector } from "react-redux";
 import { Product } from "types";
 
 const DetailsPage = () => {
+  const dispatch = useAppDispatch();
   const { id } = useLocalSearchParams<{ id: string }>();
-  const [product, setProduct] = useState<Product>();
+  const { products } = useSelector((state: RootState) => state.products);
+  const product = products.find((p) => p.id === parseInt(id));
   const [relatedProducts, setRelatedProducts] = useState<Product[]>();
   const [image, setImage] = useState<string>();
   useEffect(() => {
-    const fetchProduct = async () => {
-      const product = await getProduct(id);
-      const suggestedProducts = await getProducts({
-        categoryId: product?.category?.id,
-      });
-      setProduct(product);
-      setRelatedProducts(suggestedProducts);
-      setImage(product.images[0].url);
-    };
-    fetchProduct();
-  }, [id]);
+    setImage(product?.images[0].imageUrl);
+  }, []);
+  // if (product !== undefined)
+  // useEffect(() => {
+  //   const fetchProduct = async () => {
+  //     const product = await getProduct(id);
+  //     const suggestedProducts = await getProducts({
+  //       categoryId: product?.category?.id,
+  //     });
+  //     setProduct(product);
+  //     setRelatedProducts(suggestedProducts);
+  //     setImage(product.images[0].url);
+  //   };
+  //   fetchProduct();
+  // }, [id]);
   return (
     <View className="flex flex-col justify-between flex-1 p-3 bg-white">
       <Text className="ml-4 text-2xl" style={{ fontFamily: "Poppins-Black" }}>
@@ -55,14 +62,14 @@ const DetailsPage = () => {
                 key={index}
                 className="flex-shrink-0 overflow-hidden border-2 border-gray-200 rounded-md h-14 w-14"
                 onPress={() => {
-                  setImage(image?.url);
+                  setImage(image?.imageUrl);
                 }}
               >
                 <Image
                   resizeMode="center"
                   className="object-cover object-center w-full h-full"
                   source={{
-                    uri: image?.url,
+                    uri: image?.imageUrl,
                   }}
                 />
               </TouchableOpacity>
@@ -70,26 +77,28 @@ const DetailsPage = () => {
           </ScrollView>
         </View>
         <View className="p-2 space-y-3 w-min">
-          <Text style={{ fontFamily: "Poppins-Black" }}>
-            $ {product?.price}
+          <Text className="text-lg font-pextrabold">$ {product?.price}</Text>
+
+          <Text className="font-pregular">
+            Size(s): {product?.sizes.map((size) => size.value + ", ")}
           </Text>
-          <Text style={{ fontFamily: "Poppins-Regular" }}>
-            Size: {product?.size.name}
-          </Text>
-          <Text style={{ fontFamily: "Poppins-Regular" }}>
-            Quantity: {product?.quantity}
-          </Text>
+
+          <Text className="font-pregular">Quantity: {product?.quantity}</Text>
           <View className="flex flex-row items-center ">
-            <Text style={{ fontFamily: "Poppins-Regular" }}>Color: </Text>
-            <View
-              style={{ backgroundColor: product?.color.value }}
-              className="w-4 h-4 rounded-full"
-            ></View>
+            <Text className="font-pregular">Color(s): </Text>
+            {product?.colors.map((color) => (
+              <View
+                key={color.id}
+                style={{ backgroundColor: color.hexValue }}
+                className="w-4 h-4 mr-1 rounded-full"
+              ></View>
+            ))}
           </View>
-          <Text style={{ fontFamily: "Poppins-Thin" }} className="mb-2">
-            {product?.category.name}
-          </Text>
-          <TouchableOpacity className="p-3 bg-black rounded-lg ">
+          <Text className="mb-2 font-plight">{product?.category.name}</Text>
+          <TouchableOpacity
+            className="p-3 bg-black rounded-lg "
+            onPress={() => dispatch(addProductToCart(product))}
+          >
             <View className="flex flex-row items-center gap-2">
               <Text
                 className="text-xs text-white"

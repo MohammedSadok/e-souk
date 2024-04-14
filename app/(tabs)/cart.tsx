@@ -1,4 +1,5 @@
 import CartItem from "@components/CartItem";
+import { RootState } from "@store/index";
 import React from "react";
 import {
   FlatList,
@@ -7,22 +8,18 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import useCartStore from "../../store/cartStore";
+import { useSelector } from "react-redux";
+
 type Props = {};
 
 const Page = (props: Props) => {
-  const { products, total } = useCartStore((state) => ({
-    products: state.products,
-    total: state.total,
-    clearCart: state.clearCart,
-  }));
+  const { cart } = useSelector((state: RootState) => state.products);
   return (
-    <SafeAreaView className="flex justify-between flex-1 ">
-      {products.length > 0 ? (
+    <View className="flex justify-between flex-1 ">
+      {cart.length > 0 ? (
         <FlatList
-          data={products}
-          keyExtractor={(item) => item.id}
+          data={cart}
+          keyExtractor={(item) => item.name}
           className="mt-5 space-y-2 "
           renderItem={({ item }) => <CartItem key={item.id} data={item} />}
         ></FlatList>
@@ -40,7 +37,7 @@ const Page = (props: Props) => {
       <View className="px-4 py-2 bg-slate-50">
         <View className="flex flex-row justify-between text-base font-medium text-gray-900">
           <Text className="text-lg">Subtotal</Text>
-          <Text className="text-lg font-bold">${total}</Text>
+          {/* <Text className="text-lg font-bold">${total}</Text> */}
         </View>
         <Text className="mt-0.5 text-sm text-gray-500">
           Shipping and taxes calculated at checkout.
@@ -51,7 +48,7 @@ const Page = (props: Props) => {
           </TouchableOpacity>
         </View>
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 

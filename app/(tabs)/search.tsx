@@ -1,14 +1,13 @@
 import React from "react";
-import { StyleSheet, Text } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { StyleSheet, Text, View } from "react-native";
 
 type Props = {};
 
 const Page = (props: Props) => {
   return (
-    <SafeAreaView>
+    <View>
       <Text>Page</Text>
-    </SafeAreaView>
+    </View>
   );
 };
 
