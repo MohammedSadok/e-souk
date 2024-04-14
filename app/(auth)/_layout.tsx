@@ -1,13 +1,15 @@
-import { RootState, useAppDispatch } from "@store/index";
-import { fetchProducts } from "@store/productSlice";
-import { Redirect, Stack } from "expo-router";
+import { RootState } from "@store/index";
+import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { useEffect } from "react";
 import { useSelector } from "react-redux";
 
 const AuthLayout = () => {
-  const { user } = useSelector((state: RootState) => state.userAuth);
-  if (user) return <Redirect href="/(tabs)" />;
+  const { user, token, loading } = useSelector(
+    (state: RootState) => state.userAuth
+  );
+  console.log("=>  AuthLayout  token:", token);
+  console.log("=>  AuthLayout  loading:", loading);
+  // if (user) return <Redirect href="/(tabs)" />;
   return (
     <>
       <Stack>

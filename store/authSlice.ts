@@ -1,15 +1,22 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import axios from "axios";
 import { User, UserLogin } from "types";
 
+// import axios from "axios";
+// axios.defaults.baseURL = "http://localhost:1010/";
+// axios.defaults.headers.common = { Authorization: `bearer ${token}` };
+// export default axios;
+const URL = `${process.env.EXPO_PUBLIC_API_URL}/auth`;
 export const login = createAsyncThunk(
   "auth/login",
   async (user: UserLogin, thunkAPI) => {
     const { rejectWithValue } = thunkAPI;
     try {
+      const response = await axios.post(URL + "/login", user);
       return {
         user: { ...user, userName: "mohammed sadok", isLoggedIn: true },
-        token: "token",
+        token: response.data.access_token,
       };
     } catch (error) {
       return rejectWithValue("L'adresse e-mail ou mot de passe est invalide");
