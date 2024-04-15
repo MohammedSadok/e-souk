@@ -1,15 +1,13 @@
 import { RootState } from "@store/index";
-import { Stack } from "expo-router";
+import { Redirect, Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useSelector } from "react-redux";
 
 const AuthLayout = () => {
-  const { user, token, loading } = useSelector(
+  const { user, token, loading, error } = useSelector(
     (state: RootState) => state.userAuth
   );
-  console.log("=>  AuthLayout  token:", token);
-  console.log("=>  AuthLayout  loading:", loading);
-  // if (user) return <Redirect href="/(tabs)" />;
+  if (user) return <Redirect href="/(tabs)" />;
   return (
     <>
       <Stack>

@@ -4,11 +4,15 @@ import { Product } from "types";
 const URL = `${process.env.EXPO_PUBLIC_API_URL}/products`;
 
 export const fetchProducts = createAsyncThunk(
-  "auth/login",
-  async (_, thunkAPI) => {
+  "fetchesProducts",
+  async (token: String, thunkAPI) => {
     const { rejectWithValue } = thunkAPI;
     try {
-      const response = await axios.get(URL);
+      const response = await axios.get(URL, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       return response.data as Product[];
     } catch (error) {
       return rejectWithValue("Can't fetch Products");
@@ -18,6 +22,7 @@ export const fetchProducts = createAsyncThunk(
 
 interface ProductsState {
   products: Product[];
+  searchProducts: Product[];
   cart: Product[];
   loading: boolean;
   error: null | string;
@@ -26,6 +31,7 @@ interface ProductsState {
 const initialState = {
   products: [],
   cart: [],
+  searchProducts: [],
   loading: false,
   error: null,
 } as ProductsState;
@@ -56,6 +62,12 @@ const productsSlice = createSlice({
         product.quantity--;
       }
     },
+    searchProducts(state, action) {
+      const query = action.payload.toLowerCase();
+      state.searchProducts = state.products.filter((product) =>
+        product.name.toLowerCase().includes(query)
+      );
+    },
     clearCart(state) {
       state.cart = [];
     },
@@ -70,6 +82,7 @@ const productsSlice = createSlice({
       .addCase(fetchProducts.fulfilled, (state, action) => {
         state.loading = false;
         state.products = action.payload;
+        state.searchProducts = action.payload;
       })
       .addCase(fetchProducts.rejected, (state, action) => {
         state.loading = false;
@@ -84,5 +97,6 @@ export const {
   incrementQuantity,
   decrementQuantity,
   clearCart,
+  searchProducts,
 } = productsSlice.actions;
 export default productsSlice.reducer;

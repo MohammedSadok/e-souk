@@ -3,10 +3,6 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import { User, UserLogin } from "types";
 
-// import axios from "axios";
-// axios.defaults.baseURL = "http://localhost:1010/";
-// axios.defaults.headers.common = { Authorization: `bearer ${token}` };
-// export default axios;
 const URL = `${process.env.EXPO_PUBLIC_API_URL}/auth`;
 export const login = createAsyncThunk(
   "auth/login",
@@ -44,7 +40,7 @@ interface AuthState {
 }
 
 const initialState = {
-  user: { email: "", password: "", isLoggedIn: false, userName: "" },
+  user: null,
   token: null,
   loading: false,
   error: null,

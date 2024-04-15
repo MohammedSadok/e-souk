@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useSelector } from "react-redux";
 
 type Props = {};
@@ -15,7 +16,7 @@ type Props = {};
 const Page = (props: Props) => {
   const { cart } = useSelector((state: RootState) => state.products);
   return (
-    <View className="flex justify-between flex-1 ">
+    <SafeAreaView className="flex justify-between flex-1 ">
       {cart.length > 0 ? (
         <FlatList
           data={cart}
@@ -48,7 +49,7 @@ const Page = (props: Props) => {
           </TouchableOpacity>
         </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 

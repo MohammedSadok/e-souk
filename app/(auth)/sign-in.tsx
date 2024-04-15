@@ -1,10 +1,14 @@
+import CustomButton from "@components/CustomButton";
 import Input from "@components/Input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { login } from "@store/authSlice";
-import { useAppDispatch } from "@store/index";
+import { RootState, useAppDispatch } from "@store/index";
+import { Link } from "expo-router";
 import React from "react";
 import { useForm } from "react-hook-form";
-import { Text, TouchableOpacity, View } from "react-native";
+import { Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useSelector } from "react-redux";
 import { z } from "zod";
 const schema = z.object({
   email: z.string().email("Invalid email address"),
@@ -12,6 +16,7 @@ const schema = z.object({
 });
 
 const LoginPage = () => {
+  const { loading } = useSelector((state: RootState) => state.userAuth);
   const dispatch = useAppDispatch();
   const { control, handleSubmit } = useForm({
     defaultValues: {
@@ -26,42 +31,57 @@ const LoginPage = () => {
   };
 
   return (
-    <View className="items-center justify-center flex-1 px-4">
-      <Text className="text-4xl font-pextrabold">Login</Text>
-
-      <Input
-        iconName="email-outline"
-        label="Email"
-        name="email"
-        placeholder="Email"
-        autoCapitalize="none"
-        keyboardType="email-address"
-        control={control}
-      />
-      <Input
-        iconName="lock-outline"
-        label="Mot de passe"
-        name="password"
-        placeholder="Password"
-        isPassword
-        control={control}
-        className="mt-2"
-      />
-
-      <TouchableOpacity
-        className="flex flex-row items-center justify-center w-full p-3 mt-4 bg-black rounded-lg"
-        onPress={handleSubmit(onSubmit)}
-      >
-        <View className="flex flex-row items-center gap-2">
-          <Text
-            className="text-xl text-white"
-            style={{ fontFamily: "Poppins-Black" }}
-          >
-            Login
+    <SafeAreaView className="items-center justify-around flex-1 px-4">
+      <View className="flex w-full mt-20 space-y-16">
+        <View className="mt-auto space-y-2">
+          <Text className="text-3xl text-black font-pextrabold">
+            ElectroBlack
           </Text>
         </View>
-      </TouchableOpacity>
-    </View>
+
+        <View className="mt-1.5">
+          {/* <Image
+                  source={images.logoSmall}
+                  className="h-10 w-9"
+                  resizeMode="contain"
+                /> */}
+        </View>
+      </View>
+      <View className="items-center flex-1 w-full">
+        <Text className="text-4xl font-pextrabold">Login</Text>
+        <Input
+          iconName="email-outline"
+          label="Email"
+          name="email"
+          placeholder="Email"
+          autoCapitalize="none"
+          keyboardType="email-address"
+          control={control}
+        />
+        <Input
+          iconName="lock-outline"
+          label="Mot de passe"
+          name="password"
+          placeholder="Password"
+          isPassword
+          control={control}
+          className="mt-2"
+        />
+
+        <CustomButton
+          handlePress={handleSubmit(onSubmit)}
+          title="Login"
+          isLoading={loading}
+        />
+
+        <View className="flex flex-row justify-center gap-2 pt-5">
+          <Text className="text-lg font-pregular">Don't have an account?</Text>
+          <Link href="/sign-up" className="text-xl font-pbold">
+            Signup
+          </Link>
+        </View>
+      </View>
+    </SafeAreaView>
   );
 };
 

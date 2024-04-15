@@ -2,6 +2,7 @@ import { Redirect, Tabs } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { Image, ImageSourcePropType, Text, View } from "react-native";
 
+import Loader from "@components/Loading";
 import { RootState, useAppDispatch } from "@store/index";
 import { fetchProducts } from "@store/productSlice";
 import Colors from "constants/Colors";
@@ -35,17 +36,21 @@ const TabIcon = ({ color, focused, icon, name }: TabIconProps) => {
 };
 
 export default function TabLayout() {
-  const { user } = useSelector((state: RootState) => state.userAuth);
+  const { user, error, loading, token } = useSelector(
+    (state: RootState) => state.userAuth
+  );
   const dispatch = useAppDispatch();
+
   useEffect(() => {
-    dispatch(fetchProducts());
+    dispatch(fetchProducts(token as string));
   }, []);
-  if (user === null) return <Redirect href="/sign-in" />;
+  if (!user) return <Redirect href="/sign-in" />;
   return (
     <>
       <Tabs
         screenOptions={{
           headerShown: false,
+          tabBarHideOnKeyboard: true,
           tabBarActiveTintColor: Colors.dark,
           tabBarInactiveTintColor: Colors.gray,
           tabBarShowLabel: false,
@@ -149,7 +154,7 @@ export default function TabLayout() {
         />
       </Tabs>
 
-      {/* <Loader isLoading={loading} /> */}
+      <Loader isLoading={loading} />
       <StatusBar backgroundColor="#161622" style="light" />
     </>
   );

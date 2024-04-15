@@ -16,15 +16,14 @@ const EmptyState = ({ title, subtitle }: EmptyStateProps) => {
         className="w-[270px] h-[216px]"
       />
 
-      <Text className="text-sm text-gray-100 font-pmedium">{title}</Text>
-      <Text className="mt-2 text-xl text-center text-white font-psemibold">
+      <Text className="text-sm text-gray-500 font-pmedium">{title}</Text>
+      <Text className="mt-2 text-xl text-center font-psemibold">
         {subtitle}
       </Text>
 
       <CustomButton
         title="Back to Explore"
         handlePress={() => router.push("/(tabs)")}
-        containerStyles="w-full my-5"
       />
     </View>
   );

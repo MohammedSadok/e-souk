@@ -66,7 +66,7 @@ const Page = (props: Props) => {
 
             <View className="flex flex-row mt-5">
               <InfoBox
-                title={products.length.toString()}
+                title={products.length + ""}
                 subtitle="Posts"
                 titleStyles="text-xl"
                 containerStyles="mr-10"
