@@ -42,3 +42,30 @@ export interface UserLogin {
   email: string;
   password: string;
 }
+
+export interface OrderItem {
+  id: number;
+  quantity: number;
+  size: Size;
+  color: Color;
+  product: Product;
+}
+
+export interface Order {
+  id: number;
+  dateCreated: string;
+  status: string;
+  orderItems: OrderItem[];
+}
+export interface OrderItemRequest {
+  productId: number;
+  quantity: number;
+  sizeId: number;
+  colorId: number;
+}
+
+export interface OrderRequest {
+  userId: number;
+  orderItemRequests: OrderItemRequest[];
+  status: string;
+}

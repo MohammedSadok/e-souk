@@ -5,7 +5,7 @@ const URL = `${process.env.EXPO_PUBLIC_API_URL}/products`;
 
 export const fetchProducts = createAsyncThunk(
   "fetchesProducts",
-  async (token: String, thunkAPI) => {
+  async (token: string, thunkAPI) => {
     const { rejectWithValue } = thunkAPI;
     try {
       const response = await axios.get(URL, {

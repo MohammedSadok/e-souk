@@ -5,8 +5,8 @@ import { Text, View } from "react-native";
 interface InfoBoxProps {
   title: string;
   subtitle: string;
-  containerStyles?: String;
-  titleStyles?: String;
+  containerStyles?: string;
+  titleStyles?: string;
 }
 
 const InfoBox: React.FC<InfoBoxProps> = ({

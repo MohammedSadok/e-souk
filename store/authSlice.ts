@@ -7,6 +7,7 @@ const URL = `${process.env.EXPO_PUBLIC_API_URL}/auth`;
 export const login = createAsyncThunk(
   "auth/login",
   async (user: UserLogin, thunkAPI) => {
+    console.log("=>  user:", user);
     const { rejectWithValue } = thunkAPI;
     try {
       const response = await axios.post(URL + "/login", user);
@@ -15,6 +16,7 @@ export const login = createAsyncThunk(
         token: response.data.access_token,
       };
     } catch (error) {
+      console.log("=>  error:", error);
       return rejectWithValue("L'adresse e-mail ou mot de passe est invalide");
     }
   }

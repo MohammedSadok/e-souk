@@ -6,7 +6,7 @@ import { RootState, useAppDispatch } from "@store/index";
 import { Link } from "expo-router";
 import React from "react";
 import { useForm } from "react-hook-form";
-import { Text, View } from "react-native";
+import { Alert, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useSelector } from "react-redux";
 import { z } from "zod";
@@ -16,7 +16,8 @@ const schema = z.object({
 });
 
 const LoginPage = () => {
-  const { loading } = useSelector((state: RootState) => state.userAuth);
+  const { loading, error } = useSelector((state: RootState) => state.userAuth);
+  if (error) Alert.alert("Error", error);
   const dispatch = useAppDispatch();
   const { control, handleSubmit } = useForm({
     defaultValues: {
@@ -27,7 +28,7 @@ const LoginPage = () => {
   });
 
   const onSubmit = async (data: z.infer<typeof schema>) => {
-    const resultAction = dispatch(login(data));
+    dispatch(login(data));
   };
 
   return (

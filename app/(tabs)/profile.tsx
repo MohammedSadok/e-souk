@@ -1,39 +1,37 @@
 import EmptyState from "@components/EmptyState";
 import InfoBox from "@components/InfoBox";
-import ProductItem from "@components/ProductItem";
+import Loader from "@components/Loading";
+import OrderComponent from "@components/OrderItem";
 import { SimpleLineIcons } from "@expo/vector-icons";
 import { logout } from "@store/authSlice";
 import { RootState, useAppDispatch } from "@store/index";
-import { router } from "expo-router";
-import React from "react";
+import { fetchOrders } from "@store/orderSlice";
+import React, { useEffect } from "react";
 import { FlatList, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useSelector } from "react-redux";
 type Props = {};
 
 const Page = (props: Props) => {
-  const { user } = useSelector((state: RootState) => state.userAuth);
+  const { user, token } = useSelector((state: RootState) => state.userAuth);
   const { products } = useSelector((state: RootState) => state.products);
+  const { orders, loading, error } = useSelector(
+    (state: RootState) => state.orderSlice
+  );
   const dispatch = useAppDispatch();
+  console.log("=>  Page  orders:", orders);
+  useEffect(() => {
+    if (token) dispatch(fetchOrders(token));
+  }, []);
   const handleLogout = async () => {
-    logout();
-    router.replace("/sign-in");
+    dispatch(logout());
   };
   return (
     <SafeAreaView className="h-full bg-white">
       <FlatList
-        data={products}
-        keyExtractor={(item) => item.name}
-        renderItem={({ item }) => (
-          <ProductItem key={item.id} data={item} />
-          // <ProductItem
-          //   title={item.title}
-          //   thumbnail={item.thumbnail}
-          //   video={item.video}
-          //   creator={item.creator.username}
-          //   avatar={item.creator.avatar}
-          // />
-        )}
+        data={orders}
+        // keyExtractor={(item) => item.id + ""}
+        renderItem={({ item }) => <OrderComponent key={item.id} order={item} />}
         ListEmptyComponent={() => (
           <EmptyState
             title="No Videos Found"
@@ -80,6 +78,7 @@ const Page = (props: Props) => {
           </View>
         )}
       />
+      <Loader isLoading={loading} />
     </SafeAreaView>
   );
 };
