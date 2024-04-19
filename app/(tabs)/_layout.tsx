@@ -3,6 +3,7 @@ import { StatusBar } from "expo-status-bar";
 import { Image, ImageSourcePropType, Text, View } from "react-native";
 
 import Loader from "@components/Loading";
+import { checkUserIfExist } from "@store/authSlice";
 import { RootState, useAppDispatch } from "@store/index";
 import { fetchProducts } from "@store/productSlice";
 import Colors from "constants/Colors";
@@ -42,6 +43,7 @@ export default function TabLayout() {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
+    dispatch(checkUserIfExist());
     dispatch(fetchProducts(token as string));
   }, []);
   if (!user) return <Redirect href="/sign-in" />;
@@ -82,30 +84,6 @@ export default function TabLayout() {
               ),
           }}
         />
-        <Tabs.Screen
-          name="search"
-          options={{
-            title: "Search",
-            headerShown: false,
-            tabBarIcon: ({ color, focused }) =>
-              focused ? (
-                <TabIcon
-                  icon={icons.search}
-                  color={color}
-                  name="Search"
-                  focused={focused}
-                />
-              ) : (
-                <TabIcon
-                  icon={icons.searchOutline}
-                  color={color}
-                  name="Search"
-                  focused={focused}
-                />
-              ),
-          }}
-        />
-
         <Tabs.Screen
           name="cart"
           options={{

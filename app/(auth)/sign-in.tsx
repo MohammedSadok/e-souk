@@ -40,13 +40,7 @@ const LoginPage = () => {
           </Text>
         </View>
 
-        <View className="mt-1.5">
-          {/* <Image
-                  source={images.logoSmall}
-                  className="h-10 w-9"
-                  resizeMode="contain"
-                /> */}
-        </View>
+        <View className="mt-1.5"></View>
       </View>
       <View className="items-center flex-1 w-full">
         <Text className="text-4xl font-pextrabold">Login</Text>

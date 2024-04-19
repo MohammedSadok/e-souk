@@ -1,18 +1,19 @@
 import CustomButton from "@components/CustomButton";
 import Input from "@components/Input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { RootState } from "@store/index";
-import { Link } from "expo-router";
-import React from "react";
+import { cancelError, register } from "@store/authSlice";
+import { RootState, useAppDispatch } from "@store/index";
+import { Link, router } from "expo-router";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { Text, View } from "react-native";
+import { Alert, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useSelector } from "react-redux";
 import { z } from "zod";
 const schema = z.object({
   email: z.string().email("Invalid email address"),
   userName: z.string().min(10, "Username must be at least 10 characters long"),
-  password: z.string().min(6, "Password must be at least 6 characters long"),
+  password: z.string().min(8, "Password must be at least 8 characters long"),
 });
 
 const SignUp = () => {
@@ -24,9 +25,26 @@ const SignUp = () => {
     },
     resolver: zodResolver(schema),
   });
+  const { loading, error, message } = useSelector(
+    (state: RootState) => state.userAuth
+  );
 
-  const onSubmit = async (data: z.infer<typeof schema>) => {};
-  const { loading } = useSelector((state: RootState) => state.userAuth);
+  useEffect(() => {
+    if (error) {
+      Alert.alert("Error", error);
+      setTimeout(() => dispatch(cancelError()), 3000);
+    } else if (message) {
+      Alert.alert("Message", message);
+      router.push("/(auth)/sign-in");
+    }
+  }, [error, message]);
+
+  const dispatch = useAppDispatch();
+
+  const onSubmit = async (data: z.infer<typeof schema>) => {
+    dispatch(register(data));
+  };
+
   return (
     <SafeAreaView className="items-center justify-center flex-1 px-4">
       <View className="flex w-full mt-20 space-y-16">
@@ -36,13 +54,7 @@ const SignUp = () => {
           </Text>
         </View>
 
-        <View className="mt-1.5">
-          {/* <Image
-                  source={images.logoSmall}
-                  className="h-10 w-9"
-                  resizeMode="contain"
-                /> */}
-        </View>
+        <View className="mt-1.5"></View>
       </View>
       <View className="items-center flex-1 w-full">
         <Text className="text-4xl font-pextrabold">Register</Text>
@@ -83,7 +95,7 @@ const SignUp = () => {
             Have an account already?
           </Text>
           <Link href="/sign-in" className="text-xl font-pbold">
-            Login
+            Register
           </Link>
         </View>
       </View>

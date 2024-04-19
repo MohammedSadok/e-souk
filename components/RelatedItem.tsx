@@ -15,7 +15,7 @@ const RelatedItem = ({ data }: RelatedItemProps) => {
             resizeMode="contain"
             className="object-cover object-center w-full h-full"
             source={{
-              uri: data.images[0].url,
+              uri: data.images[0].imageUrl,
             }}
           />
         </View>

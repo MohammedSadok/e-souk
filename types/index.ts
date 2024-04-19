@@ -34,13 +34,18 @@ export interface Size {
 }
 
 export interface User {
+  id: number;
   email: string;
   userName: string;
-  isLoggedIn: boolean;
 }
 export interface UserLogin {
   email: string;
   password: string;
+}
+export interface UserRegister {
+  email: string;
+  password: string;
+  userName: string;
 }
 
 export interface OrderItem {

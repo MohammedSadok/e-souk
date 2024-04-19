@@ -1,7 +1,7 @@
 import RelatedItem from "@components/RelatedItem";
 import { Feather } from "@expo/vector-icons";
 import { RootState, useAppDispatch } from "@store/index";
-import { addProductToCart } from "@store/productSlice";
+import { addProductToCart, fetchRelatedProducts } from "@store/productSlice";
 import { useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
@@ -13,31 +13,29 @@ import {
   View,
 } from "react-native";
 import { useSelector } from "react-redux";
-import { Product } from "types";
 
 const DetailsPage = () => {
   const dispatch = useAppDispatch();
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { products } = useSelector((state: RootState) => state.products);
+  const { products, relatedProducts } = useSelector(
+    (state: RootState) => state.products
+  );
+  const { token } = useSelector((state: RootState) => state.userAuth);
   const product = products.find((p) => p.id === parseInt(id));
-  const [relatedProducts, setRelatedProducts] = useState<Product[]>();
   const [image, setImage] = useState<string>();
   useEffect(() => {
     setImage(product?.images[0].imageUrl);
   }, []);
-  // if (product !== undefined)
-  // useEffect(() => {
-  //   const fetchProduct = async () => {
-  //     const product = await getProduct(id);
-  //     const suggestedProducts = await getProducts({
-  //       categoryId: product?.category?.id,
-  //     });
-  //     setProduct(product);
-  //     setRelatedProducts(suggestedProducts);
-  //     setImage(product.images[0].url);
-  //   };
-  //   fetchProduct();
-  // }, [id]);
+  if (product !== undefined)
+    useEffect(() => {
+      if (token)
+        dispatch(
+          fetchRelatedProducts({
+            categoryId: product?.category?.id,
+            token: token,
+          })
+        );
+    }, [id]);
   return (
     <View className="flex flex-col justify-between flex-1 p-3 bg-white">
       <Text className="ml-4 text-2xl" style={{ fontFamily: "Poppins-Black" }}>
@@ -121,7 +119,7 @@ const DetailsPage = () => {
             showsHorizontalScrollIndicator={false}
             horizontal
             data={relatedProducts}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item) => item.id + ""}
             className="mt-4"
             renderItem={({ item }) => <RelatedItem key={item.id} data={item} />}
           ></FlatList>

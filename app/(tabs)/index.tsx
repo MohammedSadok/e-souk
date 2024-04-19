@@ -1,21 +1,46 @@
+import EmptyState from "@components/EmptyState";
+import ProductItem from "@components/ProductItem";
+import SearchInput from "@components/SearchInput";
 import { RootState } from "@store/index";
-import { ScrollView } from "react-native";
+import { fetchProducts } from "@store/productSlice";
+
+import { FlatList, RefreshControl, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useSelector } from "react-redux";
-import ProductItem from "../../components/ProductItem";
-const Page = () => {
-  const { products } = useSelector((state: RootState) => state.products);
+type Props = {};
 
+const Page = (props: Props) => {
+  const { searchProducts, loading } = useSelector(
+    (state: RootState) => state.products
+  );
+
+  const { token } = useSelector((state: RootState) => state.userAuth);
+  const onRefresh = async () => {
+    if (token) fetchProducts(token);
+  };
   return (
-    <SafeAreaView className="flex-1 bg-gray-50">
-      {products.length > 0 && (
-        <ScrollView className="space-y-2 ">
-          {products.map((product) => (
-            <ProductItem key={product.id} data={product} />
-          ))}
-        </ScrollView>
-      )}
+    <SafeAreaView style={{ flex: 1, backgroundColor: "bg-primary" }}>
+      <FlatList
+        data={searchProducts}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => <ProductItem data={item} />}
+        ListHeaderComponent={() => (
+          <View className="flex px-2 my-2 space-y-6">
+            <SearchInput />
+          </View>
+        )}
+        ListEmptyComponent={() => (
+          <EmptyState
+            title="No Products Found"
+            subtitle="No products available yet"
+          />
+        )}
+        refreshControl={
+          <RefreshControl refreshing={loading} onRefresh={onRefresh} />
+        }
+      />
     </SafeAreaView>
   );
 };
+
 export default Page;
