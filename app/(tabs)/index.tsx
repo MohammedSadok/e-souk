@@ -1,7 +1,7 @@
 import EmptyState from "@components/EmptyState";
 import ProductItem from "@components/ProductItem";
 import SearchInput from "@components/SearchInput";
-import { RootState } from "@store/index";
+import { RootState, useAppDispatch } from "@store/index";
 import { fetchProducts } from "@store/productSlice";
 
 import { FlatList, RefreshControl, View } from "react-native";
@@ -10,20 +10,23 @@ import { useSelector } from "react-redux";
 type Props = {};
 
 const Page = (props: Props) => {
+  const dispatch = useAppDispatch();
   const { searchProducts, loading } = useSelector(
     (state: RootState) => state.products
   );
 
   const { token } = useSelector((state: RootState) => state.userAuth);
   const onRefresh = async () => {
-    if (token) fetchProducts(token);
+    if (token) dispatch(fetchProducts(token));
   };
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "bg-primary" }}>
       <FlatList
         data={searchProducts}
         keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => <ProductItem data={item} />}
+        renderItem={({ item }) => {
+          return item.quantity > 0 ? <ProductItem data={item} /> : null;
+        }}
         ListHeaderComponent={() => (
           <View className="flex px-2 my-2 space-y-6">
             <SearchInput />

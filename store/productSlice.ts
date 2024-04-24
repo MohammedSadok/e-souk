@@ -21,23 +21,6 @@ export const fetchProducts = createAsyncThunk(
   }
 );
 
-export const fetchRelatedProducts = createAsyncThunk(
-  "fetchRelatedProducts",
-  async (data: { token: string; categoryId: number }, thunkAPI) => {
-    const { rejectWithValue } = thunkAPI;
-    try {
-      const response = await axios.get(URL + `/category/${data.categoryId}`, {
-        headers: {
-          Authorization: `Bearer ${data.token}`,
-        },
-      });
-      return response.data as Product[];
-    } catch (error) {
-      return rejectWithValue("Can't fetch Products");
-    }
-  }
-);
-
 export const createOrder = createAsyncThunk(
   "createOrder",
   async (
@@ -137,11 +120,17 @@ const productsSlice = createSlice({
     },
     incrementQuantity(state, action) {
       const productId = action.payload;
-      const product = state.cart.find((product) => product.id === productId);
-      if (product) {
-        product.quantity++;
+      const productCart = state.cart.find(
+        (product) => product.id === productId
+      );
+      const product = state.products.find(
+        (product) => product.id === productId
+      );
+      if (productCart && product && product?.quantity > productCart.quantity) {
+        productCart.quantity++;
       }
     },
+
     decrementQuantity(state, action) {
       const productId = action.payload;
       const product = state.cart.find((product) => product.id === productId);
@@ -172,19 +161,6 @@ const productsSlice = createSlice({
         state.searchProducts = action.payload;
       })
       .addCase(fetchProducts.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload as string;
-      })
-
-      .addCase(fetchRelatedProducts.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(fetchRelatedProducts.fulfilled, (state, action) => {
-        state.loading = false;
-        state.relatedProducts = action.payload;
-      })
-      .addCase(fetchRelatedProducts.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       })

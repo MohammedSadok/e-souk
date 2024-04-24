@@ -87,7 +87,7 @@ const SignUp = () => {
 
         <CustomButton
           handlePress={handleSubmit(onSubmit)}
-          title="Login"
+          title="Create"
           isLoading={loading}
         />
         <View className="flex flex-row justify-center gap-2 pt-5">
@@ -95,7 +95,7 @@ const SignUp = () => {
             Have an account already?
           </Text>
           <Link href="/sign-in" className="text-xl font-pbold">
-            Register
+            Login
           </Link>
         </View>
       </View>

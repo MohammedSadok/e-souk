@@ -36,14 +36,14 @@ const Page = () => {
       <View className="flex flex-row items-center justify-between w-full px-3 ">
         <View className="flex items-center justify-center px-3 py-4 border rounded-full bg-black-100 border-secondary">
           <Text className="text-2xl text-white capitalize font-pextrabold">
-            {user?.userName.slice(0, 15)} ...
+            {user?.userName.slice(0, 8)} ...
           </Text>
         </View>
         <TouchableOpacity
           onPress={() => setIsVisible(true)}
-          className="p-3 bg-gray-700 rounded-lg"
+          className="p-3 border rounded-lg "
         >
-          <SimpleLineIcons name="logout" size={24} color="white" />
+          <SimpleLineIcons name="logout" size={28} color="black" />
         </TouchableOpacity>
       </View>
       <Text className="my-2 ml-2 text-2xl text-black underline capitalize font-pextrabold">
@@ -80,8 +80,8 @@ const Page = () => {
         renderItem={({ item }) => <OrderComponent key={item.id} order={item} />}
         ListEmptyComponent={() => (
           <EmptyState
-            title="No Videos Found"
-            subtitle="No videos found for this profile"
+            title="No Orders Found"
+            subtitle="No Orders found for this profile"
           />
         )}
         refreshControl={
