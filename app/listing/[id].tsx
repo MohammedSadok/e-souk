@@ -1,8 +1,9 @@
-import getProduct from "@api/get-product";
-import getProducts from "@api/get-products";
 import RelatedItem from "@components/RelatedItem";
-import { Feather } from "@expo/vector-icons";
-import { useLocalSearchParams } from "expo-router";
+import { Feather, FontAwesome5 } from "@expo/vector-icons";
+import { RootState, useAppDispatch } from "@store/index";
+import { addProductToCart, removeProductFromCart } from "@store/productSlice";
+import axios from "axios";
+import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   FlatList,
@@ -12,30 +13,57 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useSelector } from "react-redux";
 import { Product } from "types";
-
 const DetailsPage = () => {
+  const dispatch = useAppDispatch();
   const { id } = useLocalSearchParams<{ id: string }>();
-  const [product, setProduct] = useState<Product>();
+  const { products, cart } = useSelector((state: RootState) => state.products);
   const [relatedProducts, setRelatedProducts] = useState<Product[]>();
+
+  const { token } = useSelector((state: RootState) => state.userAuth);
+  const product = products.find((p) => p.id === parseInt(id));
+  const inCart = !!cart.find((p) => p.id === parseInt(id, 10));
+
   const [image, setImage] = useState<string>();
+  const navigation = useNavigation();
+
+  React.useEffect(() => {
+    navigation.setOptions({ headerShown: false });
+  }, [navigation]);
+
   useEffect(() => {
-    const fetchProduct = async () => {
-      const product = await getProduct(id);
-      const suggestedProducts = await getProducts({
-        categoryId: product?.category?.id,
-      });
-      setProduct(product);
-      setRelatedProducts(suggestedProducts);
-      setImage(product.images[0].url);
-    };
-    fetchProduct();
-  }, [id]);
+    setImage(product?.images[0].imageUrl);
+  }, []);
+  if (product !== undefined)
+    useEffect(() => {
+      const fetchRelatedProducts = async () => {
+        const response = await axios.get(
+          `${process.env.EXPO_PUBLIC_API_URL}/products/category/${product?.category.id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setRelatedProducts(response.data);
+      };
+      fetchRelatedProducts();
+    }, [id]);
   return (
-    <View className="flex flex-col justify-between flex-1 p-3 bg-white">
-      <Text className="ml-4 text-2xl" style={{ fontFamily: "Poppins-Black" }}>
-        {product?.name}
-      </Text>
+    <SafeAreaView className="flex flex-col justify-around flex-1 p-3 bg-white">
+      <View className="flex-row items-center justify-between w-full">
+        <TouchableOpacity onPress={() => router.back()}>
+          <FontAwesome5 name="arrow-left" size={24} color="black" />
+        </TouchableOpacity>
+        <Text
+          className="mx-auto text-2xl break-all h-9"
+          style={{ fontFamily: "Poppins-Black" }}
+        >
+          {product?.name}
+        </Text>
+      </View>
       <View className="flex flex-row pb-4 mx-auto border-b-2 border-gray-500">
         <View className="w-auto">
           {image && (
@@ -55,14 +83,14 @@ const DetailsPage = () => {
                 key={index}
                 className="flex-shrink-0 overflow-hidden border-2 border-gray-200 rounded-md h-14 w-14"
                 onPress={() => {
-                  setImage(image?.url);
+                  setImage(image?.imageUrl);
                 }}
               >
                 <Image
                   resizeMode="center"
                   className="object-cover object-center w-full h-full"
                   source={{
-                    uri: image?.url,
+                    uri: image?.imageUrl,
                   }}
                 />
               </TouchableOpacity>
@@ -70,32 +98,34 @@ const DetailsPage = () => {
           </ScrollView>
         </View>
         <View className="p-2 space-y-3 w-min">
-          <Text style={{ fontFamily: "Poppins-Black" }}>
-            $ {product?.price}
+          <Text className="text-lg font-pextrabold">$ {product?.price}</Text>
+
+          <Text className="font-pregular">
+            Size(s): {product?.sizes.map((size) => size.value + ", ")}
           </Text>
-          <Text style={{ fontFamily: "Poppins-Regular" }}>
-            Size: {product?.size.name}
-          </Text>
-          <Text style={{ fontFamily: "Poppins-Regular" }}>
-            Quantity: {product?.quantity}
-          </Text>
+
+          <Text className="font-pregular">Quantity: {product?.quantity}</Text>
           <View className="flex flex-row items-center ">
-            <Text style={{ fontFamily: "Poppins-Regular" }}>Color: </Text>
-            <View
-              style={{ backgroundColor: product?.color.value }}
-              className="w-4 h-4 rounded-full"
-            ></View>
+            <Text className="font-pregular">Color(s): </Text>
+            {product?.colors.map((color) => (
+              <View
+                key={color.id}
+                style={{ backgroundColor: color.hexValue }}
+                className="w-4 h-4 mr-1 rounded-full"
+              ></View>
+            ))}
           </View>
-          <Text style={{ fontFamily: "Poppins-Thin" }} className="mb-2">
-            {product?.category.name}
-          </Text>
-          <TouchableOpacity className="p-3 bg-black rounded-lg ">
+          <Text className="mb-2 font-plight">{product?.category.name}</Text>
+          <TouchableOpacity
+            className="p-3 bg-black rounded-lg "
+            onPress={() => {
+              if (inCart) dispatch(removeProductFromCart(product?.id));
+              else dispatch(addProductToCart(product));
+            }}
+          >
             <View className="flex flex-row items-center gap-2">
-              <Text
-                className="text-xs text-white"
-                style={{ fontFamily: "Poppins-Black" }}
-              >
-                Add To Cart
+              <Text className="text-xs text-white font-pmedium">
+                {inCart ? "Remove from" : "Add to "}
               </Text>
               <Feather name="shopping-cart" size={18} color="white" />
             </View>
@@ -112,7 +142,7 @@ const DetailsPage = () => {
             showsHorizontalScrollIndicator={false}
             horizontal
             data={relatedProducts}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item) => item.id + ""}
             className="mt-4"
             renderItem={({ item }) => <RelatedItem key={item.id} data={item} />}
           ></FlatList>
@@ -127,7 +157,7 @@ const DetailsPage = () => {
           </View>
         )}
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 

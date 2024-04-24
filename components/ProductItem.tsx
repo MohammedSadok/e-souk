@@ -1,20 +1,26 @@
 import { Feather, FontAwesome5 } from "@expo/vector-icons";
+import { RootState, useAppDispatch } from "@store/index";
+import { addProductToCart, removeProductFromCart } from "@store/productSlice";
 import { Link } from "expo-router";
 import React from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
+import { useSelector } from "react-redux";
 import { Product } from "types";
-import useCartStore from "../store/cartStore";
-
 interface ProductProps {
   data: Product;
 }
 
 const ProductItem = ({ data }: ProductProps) => {
-  const { addProduct, products } = useCartStore((state) => ({
-    addProduct: state.addProduct,
-    products: state.products,
-  }));
-  const selected = products.some((product) => product.id === data.id);
+  const dispatch = useAppDispatch();
+  const { cart } = useSelector((state: RootState) => state.products);
+  const inCart = cart.some((product) => product.id === data.id);
+  const handleCartButton = () => {
+    if (inCart) {
+      dispatch(removeProductFromCart(data.id));
+    } else {
+      dispatch(addProductToCart(data));
+    }
+  };
   return (
     <Link href={`/listing/${data.id}`} asChild>
       <TouchableOpacity
@@ -26,7 +32,7 @@ const ProductItem = ({ data }: ProductProps) => {
             resizeMode="center"
             className="object-cover object-center w-full h-full"
             source={{
-              uri: data.images?.[0]?.url,
+              uri: data.images?.[0]?.imageUrl,
             }}
           />
         </View>
@@ -38,9 +44,9 @@ const ProductItem = ({ data }: ProductProps) => {
               </Link>
               <TouchableOpacity
                 className="transition active:scale-110"
-                onPress={() => addProduct(data)}
+                onPress={handleCartButton}
               >
-                {selected ? (
+                {inCart ? (
                   <FontAwesome5 name="shopping-cart" size={24} color="black" />
                 ) : (
                   <Feather name="shopping-cart" size={24} color="black" />

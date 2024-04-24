@@ -2,8 +2,12 @@ import { Redirect, Tabs } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { Image, ImageSourcePropType, Text, View } from "react-native";
 
-import { RootState } from "@store/index";
+import Loader from "@components/Loading";
+import { checkUserIfExist } from "@store/authSlice";
+import { RootState, useAppDispatch } from "@store/index";
+import { fetchProducts } from "@store/productSlice";
 import Colors from "constants/Colors";
+import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { icons } from "../../constants";
 interface TabIconProps {
@@ -33,13 +37,22 @@ const TabIcon = ({ color, focused, icon, name }: TabIconProps) => {
 };
 
 export default function TabLayout() {
-  const { user } = useSelector((state: RootState) => state.userAuth);
-  if (user === null) return <Redirect href="/sign-in" />;
+  const { user, error, loading, token } = useSelector(
+    (state: RootState) => state.userAuth
+  );
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(checkUserIfExist());
+    dispatch(fetchProducts(token as string));
+  }, []);
+  if (!user) return <Redirect href="/sign-in" />;
   return (
     <>
       <Tabs
         screenOptions={{
           headerShown: false,
+          tabBarHideOnKeyboard: true,
           tabBarActiveTintColor: Colors.dark,
           tabBarInactiveTintColor: Colors.gray,
           tabBarShowLabel: false,
@@ -71,30 +84,6 @@ export default function TabLayout() {
               ),
           }}
         />
-        <Tabs.Screen
-          name="search"
-          options={{
-            title: "Search",
-            headerShown: false,
-            tabBarIcon: ({ color, focused }) =>
-              focused ? (
-                <TabIcon
-                  icon={icons.search}
-                  color={color}
-                  name="Search"
-                  focused={focused}
-                />
-              ) : (
-                <TabIcon
-                  icon={icons.searchOutline}
-                  color={color}
-                  name="Search"
-                  focused={focused}
-                />
-              ),
-          }}
-        />
-
         <Tabs.Screen
           name="cart"
           options={{
@@ -143,7 +132,7 @@ export default function TabLayout() {
         />
       </Tabs>
 
-      {/* <Loader isLoading={loading} /> */}
+      <Loader isLoading={loading} />
       <StatusBar backgroundColor="#161622" style="light" />
     </>
   );
